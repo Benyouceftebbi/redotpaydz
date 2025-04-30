@@ -18,6 +18,8 @@ import {
   Bitcoin,
   EclipseIcon as Ethereum,
   DollarSign,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -27,6 +29,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 export default function OrderPage() {
   const { toast } = useToast()
@@ -2030,11 +2033,11 @@ export default function OrderPage() {
       orderSection.scrollIntoView({ behavior: "smooth" })
     }
   }
-
+  const [isOrderSummaryOpen, setIsOrderSummaryOpen] = useState(false)
   return (
-    <div dir="rtl" className="min-h-screen bg-white text-black">
+    <div dir="rtl" className="min-h-screen bg-white text-black overflow-x-hidden w-full">
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="container mx-auto px-4 py-16 md:py-24 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
@@ -2158,7 +2161,7 @@ export default function OrderPage() {
       </div>
 
       {/* Order Form Section */}
-      <div id="order-section" className="bg-gray-50 py-16">
+      <div id="order-section" className="bg-gray-50 py-16 overflow-hidden w-full">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">طلب البطاقة الرقمية</h2>
 
@@ -2286,9 +2289,13 @@ export default function OrderPage() {
                           >
                             <SelectValue placeholder="اختر الولاية" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border-gray-300">
+                          <SelectContent className="bg-white text-black border-gray-200">
                             {wilaayaData.map((wilaaya) => (
-                              <SelectItem key={wilaaya.id} value={wilaaya.id.toString()}>
+                              <SelectItem
+                                key={wilaaya.id}
+                                value={wilaaya.id.toString()}
+                                className="text-black hover:bg-gray-100"
+                              >
                                 {wilaaya.name}
                               </SelectItem>
                             ))}
@@ -2311,9 +2318,9 @@ export default function OrderPage() {
                           >
                             <SelectValue placeholder="اختر البلدية" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border-gray-300">
+                          <SelectContent className="bg-white text-black border-gray-200">
                             {getCommunes().map((commune) => (
-                              <SelectItem key={commune.id} value={commune.id}>
+                              <SelectItem key={commune.id} value={commune.id} className="text-black hover:bg-gray-100">
                                 {commune.name}
                               </SelectItem>
                             ))}
@@ -2332,9 +2339,13 @@ export default function OrderPage() {
                           >
                             <SelectValue placeholder="اختر نوع التوصيل" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border-gray-300">
+                          <SelectContent className="bg-white text-black border-gray-200">
                             {deliveryTypes.map((delivery) => (
-                              <SelectItem key={delivery.id} value={delivery.id}>
+                              <SelectItem
+                                key={delivery.id}
+                                value={delivery.id}
+                                className="text-black hover:bg-gray-100"
+                              >
                                 {delivery.name} - {delivery.time}
                               </SelectItem>
                             ))}
@@ -2372,59 +2383,84 @@ export default function OrderPage() {
               className="md:col-span-2"
             >
               <Card className="border-gray-200 shadow-sm bg-white">
-                <CardHeader className="bg-white border-b border-gray-100">
-                  <CardTitle className="flex items-center text-lg">
-                    <ShoppingBag className="ml-2 h-5 w-5 text-red-600" />
-                    ملخص الطلب
-                  </CardTitle>
-                  <CardDescription>راجع طلبك قبل الإرسال</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    {order.items.map((item) => (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex gap-4 pb-4 border-b border-gray-200"
-                      >
-                        <div className="flex-shrink-0">
-                          <img
-                            src="/images/crypto-card-front.jpeg"
-                            alt="بطاقة فيزا رقمية"
-                            className="w-20 h-20 object-cover rounded-lg"
-                          />
+                <Collapsible open={isOrderSummaryOpen} onOpenChange={setIsOrderSummaryOpen} className="w-full">
+                  <CardHeader
+                    className="bg-white border-b border-gray-100 cursor-pointer"
+                    onClick={() => setIsOrderSummaryOpen(!isOrderSummaryOpen)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <div className="flex items-center justify-between w-full">
+                        <CardTitle className="flex items-center text-lg">
+                          <ShoppingBag className="ml-2 h-5 w-5 text-red-600" />
+                          ملخص الطلب
+                        </CardTitle>
+                        <div className="flex items-center">
+                          {isOrderSummaryOpen ? (
+                            <ChevronUp className="h-5 w-5 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-gray-500" />
+                          )}
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-gray-600 text-sm">{item.description}</p>
-                          <div className="flex justify-between mt-2">
-                            <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
-                            <p className="font-medium text-red-600">{item.price.toLocaleString()} دج</p>
+                      </div>
+                    </CollapsibleTrigger>
+                    <CardDescription>راجع طلبك قبل الإرسال</CardDescription>
+                  </CardHeader>
+
+                  <CollapsibleContent>
+                    <CardContent className="pt-6">
+                      <div className="space-y-4">
+                        {order.items.map((item) => (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex gap-4 pb-4 border-b border-gray-200"
+                          >
+                            <div className="flex-shrink-0">
+                              <img
+                                src="/images/crypto-card-front.jpeg"
+                                alt="بطاقة فيزا رقمية"
+                                className="w-20 h-20 object-cover rounded-lg"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-medium">{item.name}</h3>
+                              <p className="text-gray-600 text-sm">{item.description}</p>
+                              <div className="flex justify-between mt-2">
+                                <p className="text-sm text-gray-600">الكمية: {item.quantity}</p>
+                                <p className="font-medium text-red-600">{item.price.toLocaleString()} دج</p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+
+                        <div className="pt-4 space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">المجموع الفرعي</span>
+                            <span>{subtotal.toLocaleString()} دج</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">رسوم التوصيل</span>
+                            <span>{deliveryFee.toLocaleString()} دج</span>
+                          </div>
+                          <Separator className="my-2 bg-gray-200" />
+                          <div className="flex justify-between font-semibold">
+                            <span>المجموع</span>
+                            <span className="text-red-600">{total.toLocaleString()} دج</span>
                           </div>
                         </div>
-                      </motion.div>
-                    ))}
+                      </div>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
 
-                    <div className="pt-4 space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">المجموع الفرعي</span>
-                        <span>{subtotal.toLocaleString()} دج</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">رسوم التوصيل</span>
-                        <span>{deliveryFee.toLocaleString()} دج</span>
-                      </div>
-                      <Separator className="my-2 bg-gray-200" />
-                      <div className="flex justify-between font-semibold">
-                        <span>المجموع</span>
-                        <span className="text-red-600">{total.toLocaleString()} دج</span>
-                      </div>
-                    </div>
+                {/* Always visible order total and confirmation button */}
+                <CardFooter className="pt-4 pb-4 flex flex-col space-y-4">
+                  <div className="w-full flex justify-between items-center">
+                    <span className="font-bold text-lg">المجموع:</span>
+                    <span className="font-bold text-xl text-red-600">{total.toLocaleString()} دج</span>
                   </div>
-                </CardContent>
-                <CardFooter className="pt-2">
                   <motion.button
                     onClick={handleSubmitOrder}
                     disabled={isSubmitted}
@@ -2446,7 +2482,7 @@ export default function OrderPage() {
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 overflow-hidden">
         <h2 className="text-3xl font-bold text-center mb-12">مميزات البطاقة الرقمية</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -2467,7 +2503,7 @@ export default function OrderPage() {
       </div>
 
       {/* Simple Steps Section */}
-      <div className="container mx-auto px-4 py-16 bg-gray-50">
+      <div className="container mx-auto px-4 py-16 bg-gray-50 overflow-hidden">
         <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-center mb-8">
             <h2 className="text-3xl font-bold text-center">
@@ -2477,6 +2513,7 @@ export default function OrderPage() {
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                className="text-white"
               >
                 <path
                   d="M7 10L12 15L17 10"
