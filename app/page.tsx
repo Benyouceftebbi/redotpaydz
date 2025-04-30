@@ -2069,6 +2069,26 @@ export default function OrderPage() {
 
           <div className="relative">
             <div className="relative h-80 md:h-96">
+              {/* Price bubble */}
+              <motion.div
+                className="absolute -top-5 -right-5 z-10 bg-red-600 text-white rounded-full p-3 shadow-lg"
+                animate={{
+                  y: [0, -10, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "reverse",
+                }}
+              >
+                <div className="text-center">
+                  <div className="text-xs">ابتداءً من</div>
+                  <div className="text-xl font-bold">4450 دج</div>
+                  <div className="text-xs">فقط!</div>
+                </div>
+              </motion.div>
+
               {/* Stacked cards with real images */}
               <motion.div
                 className="absolute top-0 left-0 w-full h-full"
@@ -2188,7 +2208,7 @@ export default function OrderPage() {
               transition={{ duration: 0.5 }}
               className="md:col-span-1"
             >
-              <Card className="border-gray-200 shadow-sm">
+              <Card className="border-gray-200 shadow-sm bg-white">
                 <CardHeader className="bg-white border-b border-gray-100">
                   <CardTitle className="flex items-center text-lg">
                     <User className="ml-2 h-5 w-5 text-red-600" />
@@ -2198,6 +2218,35 @@ export default function OrderPage() {
                 <CardContent className="pt-6">
                   <div className="space-y-4">
                     <div className="space-y-3">
+                      {/* Add product option selection at the top */}
+                      <div className="space-y-2 mb-6">
+                        <Label className="text-gray-700 text-lg font-medium">اختر نوع البطاقة</Label>
+                        <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          {productData.options.map((option) => (
+                            <div
+                              key={option.id}
+                              className="flex items-center p-2 rounded-md hover:bg-white transition-colors"
+                            >
+                              <input
+                                type="radio"
+                                id={option.id}
+                                name="productOption"
+                                value={option.id}
+                                checked={productOption === option.id}
+                                onChange={() => setProductOption(option.id)}
+                                disabled={isSubmitted}
+                                className="ml-3 h-5 w-5"
+                              />
+                              <label htmlFor={option.id} className="flex flex-col flex-1 cursor-pointer">
+                                <span className="font-medium text-lg">{option.name}</span>
+                                <span className="text-sm text-gray-600">{option.description}</span>
+                              </label>
+                              <span className="font-bold text-red-600 text-lg">{option.price.toLocaleString()} دج</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-gray-700">
                           الاسم الكامل
@@ -2224,63 +2273,6 @@ export default function OrderPage() {
                           disabled={isSubmitted}
                           className={`bg-white border-gray-300 ${validationError && !customerPhone ? "border-red-500" : ""}`}
                         />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="secondPhone" className="text-gray-700">
-                          رقم هاتف ثاني (اختياري)
-                        </Label>
-                        <Input
-                          id="secondPhone"
-                          value={customerSecondPhone}
-                          onChange={(e) => setCustomerSecondPhone(e.target.value)}
-                          placeholder="أدخل رقم هاتف ثاني (اختياري)"
-                          disabled={isSubmitted}
-                          className="bg-white border-gray-300"
-                        />
-                      </div>
-
-                      {/* Replace the address input field with email input field in the form */}
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-gray-700">
-                          البريد الإلكتروني
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={customerEmail}
-                          onChange={(e) => setCustomerEmail(e.target.value)}
-                          placeholder="أدخل بريدك الإلكتروني"
-                          disabled={isSubmitted}
-                          className={`bg-white border-gray-300 ${validationError && !customerEmail ? "border-red-500" : ""}`}
-                        />
-                      </div>
-
-                      {/* Add product option selection after the email field */}
-                      <div className="space-y-2 mt-4">
-                        <Label className="text-gray-700">اختر نوع البطاقة</Label>
-                        <div className="space-y-2">
-                          {productData.options.map((option) => (
-                            <div key={option.id} className="flex items-center">
-                              <input
-                                type="radio"
-                                id={option.id}
-                                name="productOption"
-                                value={option.id}
-                                checked={productOption === option.id}
-                                onChange={() => setProductOption(option.id)}
-                                disabled={isSubmitted}
-                                className="ml-2"
-                              />
-                              <label htmlFor={option.id} className="flex flex-col">
-                                <span className="font-medium">{option.name}</span>
-                                <span className="text-sm text-gray-600">
-                                  {option.price.toLocaleString()} دج - {option.description}
-                                </span>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
                       </div>
 
                       <div className="space-y-2">
@@ -2379,7 +2371,7 @@ export default function OrderPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="md:col-span-2"
             >
-              <Card className="border-gray-200 shadow-sm">
+              <Card className="border-gray-200 shadow-sm bg-white">
                 <CardHeader className="bg-white border-b border-gray-100">
                   <CardTitle className="flex items-center text-lg">
                     <ShoppingBag className="ml-2 h-5 w-5 text-red-600" />
